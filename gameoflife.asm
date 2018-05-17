@@ -1043,10 +1043,10 @@ count_done:
 
 #
 # Name:	cell_type
-# Description: Tells whether a cell is colony A or not
+# Description: Tells whether a cell is alive or not
 #
 # Arguments:	a0 is a byte
-# Returns:	v0 is 1 if a0 is "A", -1 if "B", 0 if neither
+# Returns:	v0 is 1 if a0 is "A", 0 if neither
 # Destroys:	none
 #
 
@@ -1058,12 +1058,8 @@ cell_type:
 	la	$s0, letter_A
 	lb	$s0, 0($s0)	# s0 = "A"
 	beq	$a0, $s0, cell_type_done	# if a0 == "A"
-	li	$v0, -1
-	la	$s0, letter_B
-	lb	$s0, 0($s0)	# s0 = "B"
-	beq	$a0, $s0, cell_type_done
-	move	$v0, $zero	# if neither A or B return 0
-
+	move	$v0, $zero	# return 0 if not A
+ 
 cell_type_done:
 	lw	$s0, 0($sp)
 	lw	$ra, 4($sp)
