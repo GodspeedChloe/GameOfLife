@@ -2,8 +2,8 @@
 # FILE:		$File$
 # Author:	Chloe Jackson
 #
-# Description:	This file contains the main function for the colony game
-#		as well as all the code necessary to run a colony simulation
+# Description:	This file contains the main function for the game
+#		as well as all the code necessary to run a simulation
 #
 
 #---------------------------------
@@ -23,7 +23,7 @@ PRINT_CHAR = 11
 PRINT_INT = 1
 READ_INT = 5
 
-#--------------------------------
+#---------------------------------
 # 
 # DATA AREAS
 #
@@ -1112,9 +1112,7 @@ apply_inner_loop:
 	move	$a0, $t4
 	jal	cell_type	# what cell_type is this cell?
 	addi	$v0, $v0, -1
-	beq	$v0, $zero, byte_A	# if type 1
-	addi	$v0, $v0, 2
-	beq	$v0, $zero, byte_B	# else if type -1
+	beq	$v0, $zero, byte_A	# if alive
 	j	byte_else		# else type 0
 byte_A:
 	slti	$t7, $t2, 2	# if n < 2, then perish
@@ -1125,39 +1123,21 @@ byte_A:
 stay_A:
 	sb	$t4, 0($t3)	# write an A in write board
 	j	byte_done
-byte_B:
-	li	$a0, -1
-	mult	$t2, $a0
-	mflo	$t2		# t2 = t2 * -1 	
-	slti    $t7, $t2, 2     # if n < 2, then perish
-        bne     $t7, $zero, kill
-        slti    $t7, $t2, 4     # if n < 4, then stay alive
-        bne     $t7, $zero, stay_B
 kill:
 	la      $a0, space
         lb      $a0, 0($a0)
         sb      $a0, 0($t3)     # write a dash in write board
         j       byte_done
-stay_B:
-	sb	$t4, 0($t3)	# write a B in write board
-	j	byte_done
 byte_else:
 	move	$a0, $zero
 	addi	$a0, $a0, 3
 	beq	$a0, $t2, birth_A
-	addi	$a0, $a0, -6
-	beq	$a0, $t2, birth_B
 	j	kill
 birth_A:
 	la	$a0, letter_A
 	lb	$a0, 0($a0)	# a0 <-- ascii A
 	sb	$a0, 0($t3)	# write an A into write board
 	j	byte_done
-birth_B:
-	la      $a0, letter_B
-        lb      $a0, 0($a0)     # a0 <-- ascii B
-        sb      $a0, 0($t3)     # write an B into write board
-        j       byte_done
 byte_done:
 	addi	$t1, $t1, 1	# increment loop counter
 	j	apply_inner_loop
